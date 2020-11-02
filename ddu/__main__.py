@@ -60,7 +60,9 @@ def parse_args():
     )
 
     args = parser.parse_args()
-    if args.verbose > 2:
+    if args.verbose is None:
+        args.verbose = 0
+    elif args.verbose > 2:
         args.verbose = 2
 
     return args
