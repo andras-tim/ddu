@@ -8,6 +8,7 @@ Config = NamedTuple(
     'Config', [
         ('my_ip_url', str),
         ('my_ip_attr', Optional[str]),
+        ('check_freq_s', int),
         ('dns_token', str),
         ('dns_domain', str),
         ('dns_record_ids', List[int]),

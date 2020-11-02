@@ -131,3 +131,4 @@ dmypy.json
 
 # App
 config.json
+.cache.json

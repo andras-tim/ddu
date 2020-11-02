@@ -4,17 +4,22 @@ __doc__ = 'DigitalOcean DNS Updater for Dynamic IP'
 
 import argparse
 import logging
+from pathlib import Path
+from time import sleep
 
-from ddu.config import get_config
+from ddu.cache import get_cache
+from ddu.config import Config, get_config
 from ddu.digital_ocean_dns import DigitalOceanDns
 from ddu.my_ip import get_my_ip
+
+BASE_DIR = Path(__file__).parent
 
 
 def main():
     args = parse_args()
     logging.basicConfig(
-        level=logging.INFO,  # logging.WARNING, logging.DEBUG
-        format='%(asctime)s %(levelname)-7s %(message)s',
+        level=[logging.WARNING, logging.INFO, logging.DEBUG][args.verbose],
+        format='%(asctime)s{} %(message)s'.format('' if args.verbose < 2 else ' %(name)-25s %(levelname)-7s'),
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     config = get_config(args.config)
@@ -24,9 +29,11 @@ def main():
         dns.print_records()
         exit()
 
-    my_ip = get_my_ip(config.my_ip_url, config.my_ip_attr)
-    for record_id in config.dns_record_ids:
-        dns.update_record_by_id(record_id, my_ip)
+    with get_cache(BASE_DIR.joinpath('.cache.json')) as cache:
+        try:
+            main_loop(config, cache, dns)
+        except KeyboardInterrupt:
+            pass
 
 
 def parse_args():
@@ -45,8 +52,31 @@ def parse_args():
         default='config.json',
         help='Json config file path (default: %(default)s)'
     )
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='count',
+        help='Increase verbosity (max verbosity: -vv)'
+    )
 
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.verbose > 2:
+        args.verbose = 2
+
+    return args
+
+
+def main_loop(config: Config, cache: dict, dns: DigitalOceanDns):
+    while True:
+        current_ip = get_my_ip(config.my_ip_url, config.my_ip_attr)
+
+        if current_ip != cache.get('last_ip'):
+            for record_id in config.dns_record_ids:
+                dns.update_record_by_id(record_id, current_ip)
+
+            cache['last_ip'] = current_ip
+
+        sleep(config.check_freq_s)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 {
     "my_ip_url": "https://my-ip-getter.stuff.com/",
     "my_ip_attr": "ip",
+    "check_freq_s": 60,
     "dns_token": "foobartoken",
     "dns_domain": "bar.com",
     "dns_record_ids": [
