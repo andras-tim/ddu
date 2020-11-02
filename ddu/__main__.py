@@ -49,7 +49,7 @@ def parse_args():
         '--config',
         metavar='PATH',
         type=argparse.FileType(),
-        default='config.json',
+        default=str(BASE_DIR.joinpath('config.json')),
         help='Json config file path (default: %(default)s)'
     )
     parser.add_argument(
