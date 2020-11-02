@@ -1,0 +1,10 @@
+{
+    "my_ip_url": "https://my-ip-getter.stuff.com/",
+    "my_ip_attr": "ip",
+    "dns_token": "foobartoken",
+    "dns_domain": "bar.com",
+    "dns_record_ids": [
+        10102,
+        24520
+    ]
+}
