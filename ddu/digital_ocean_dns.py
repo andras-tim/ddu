@@ -38,7 +38,7 @@ class DigitalOceanDns:
             if not records_url:
                 return
 
-    def update_record_by_id(self, record_id: str, record_data: str):
+    def update_record_by_id(self, record_id: int, record_data: str):
         _logger.info('Updating record; record_id={!r}, new_data={!r}'.format(record_id, record_data))
 
         self.__request(
@@ -52,13 +52,15 @@ class DigitalOceanDns:
     def print_records(self):
         records = sorted(self.iterate_records(), key=self.__record_printer_order_key)
 
+        line_template = '{id:>9}  {name:<30}  {type:<5}  {data}'
+
         lines = [
-            '       ID  RECORD                          TYPE   DATA',
+            line_template.format(id='ID', name='RECORD', type='TYPE', data='DATA'),
             '-' * 80,
         ]
 
         for record in records:
-            lines.append('{id:>9}  {name:<30}  {type:<5}  {data}'.format(**record))
+            lines.append(line_template.format(**record))
 
         print(os.linesep.join(lines))
 
