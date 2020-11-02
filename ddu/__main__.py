@@ -10,7 +10,7 @@ from time import sleep
 from ddu.cache import get_cache
 from ddu.config import Config, get_config
 from ddu.digital_ocean_dns import DigitalOceanDns
-from ddu.my_ip import get_my_ip
+from ddu.my_ip import MyIp
 
 BASE_DIR = Path(__file__).parent
 
@@ -69,10 +69,11 @@ def parse_args():
 
 
 def main_loop(config: Config, cache: dict, dns: DigitalOceanDns):
-    while True:
-        current_ip = get_my_ip(config.my_ip_url, config.my_ip_attr)
+    my_ip = MyIp(config.my_ip_url, config.my_ip_attr)
 
-        if current_ip != cache.get('last_ip'):
+    while True:
+        current_ip = my_ip.get()
+        if current_ip and current_ip != cache.get('last_ip'):
             for record_id in config.dns_record_ids:
                 dns.update_record_by_id(record_id, current_ip)
 
