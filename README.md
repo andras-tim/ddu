@@ -26,7 +26,7 @@ You can use the `config-example.json` for base.
 | `dns_record_ids` | `List[str]`   | List of DNS record API IDs |
 
 
-*(You can deploy an [andras-tim/my-ip](https://github.com/andras-tim/my-ip) instance for public IP service.)*
+*(You can deploy an [andras-tim/my-ip-tcp](https://github.com/andras-tim/my-ip-tcp) instance for public IP service.)*
 
 
 ### List available DNS records
