@@ -1,7 +1,8 @@
 {
-    "my_ip_url": "https://my-ip-getter.stuff.com/",
-    "my_ip_attr": "ip",
-    "check_freq_s": 60,
+    "my_ip_host": "my-ip-getter.stuff.com",
+    "my_ip_port": 7071,
+    "my_ip_command": "get-my-ip",
+    "retry_s": 10,
     "dns_token": "foobartoken",
     "dns_domain": "bar.com",
     "dns_record_ids": [

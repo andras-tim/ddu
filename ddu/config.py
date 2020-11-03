@@ -6,9 +6,10 @@ _logger = logging.getLogger(__name__)
 
 Config = NamedTuple(
     'Config', [
-        ('my_ip_url', str),
-        ('my_ip_attr', Optional[str]),
-        ('check_freq_s', int),
+        ('my_ip_host', str),
+        ('my_ip_port', int),
+        ('my_ip_command', Optional[str]),
+        ('retry_s', int),
         ('dns_token', str),
         ('dns_domain', str),
         ('dns_record_ids', List[int]),

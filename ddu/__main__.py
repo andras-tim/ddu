@@ -10,10 +10,11 @@ from time import sleep
 from ddu.cache import get_cache
 from ddu.config import Config, get_config
 from ddu.digital_ocean_dns import DigitalOceanDns
-from ddu.my_ip import MyIp
+from ddu.my_ip import get_my_ip
 
 BASE_DIR = Path(__file__).parent
 
+_logger = logging.getLogger(__name__)
 
 def main():
     args = parse_args()
@@ -69,17 +70,17 @@ def parse_args():
 
 
 def main_loop(config: Config, cache: dict, dns: DigitalOceanDns):
-    my_ip = MyIp(config.my_ip_url, config.my_ip_attr)
-
     while True:
-        current_ip = my_ip.get()
-        if current_ip and current_ip != cache.get('last_ip'):
-            for record_id in config.dns_record_ids:
-                dns.update_record_by_id(record_id, current_ip)
+        with get_my_ip(config.my_ip_host, config.my_ip_port, config.my_ip_command) as current_ip:
+            if current_ip and current_ip != cache.get('last_ip'):
+                for record_id in config.dns_record_ids:
+                    dns.update_record_by_id(record_id, current_ip)
 
-            cache['last_ip'] = current_ip
+                cache['last_ip'] = current_ip
 
-        sleep(config.check_freq_s)
+        # Connection terminated
+        _logger.debug('Sleep before re-try')
+        sleep(config.retry_s)
 
 
 if __name__ == '__main__':

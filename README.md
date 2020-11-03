@@ -17,9 +17,10 @@ You can use the `config-example.json` for base.
 
 | Key              | Type          | Description |
 | ---------------- | ------------- | --- |
-| `my_ip_url`      | `str`         | Public IP service URL. This will be called by `GET` and expected **JSON** *string* or *dict*. |
-| `my_ip_attr`     | `str`, `null` | Key for getting IP from *dict* response or `null` if response is a `string` |
-| `check_freq_s`   | `int`         | Public IP check interval |
+| `my_ip_host`     | `str`         | Public IP service host |
+| `my_ip_port`     | `int`         | Public IP service port |
+| `my_ip_command`  | `str`, `null` | Command/hello string if necessary, otherwise `null` |
+| `retry_s`        | `int`         | Public IP re-check interval |
 | `dns_token`      | `str`         | Read-write token for [DigitalOcean API](https://cloud.digitalocean.com/account/api/tokens) |
 | `dns_domain`     | `str`         | Top level domain name ([DigitalOcean Networking](https://cloud.digitalocean.com/networking/domains/))  |
 | `dns_record_ids` | `List[str]`   | List of DNS record API IDs |

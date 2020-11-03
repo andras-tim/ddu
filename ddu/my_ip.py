@@ -1,37 +1,51 @@
 import logging
-from typing import Optional
-
-import requests
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
+import socket
+from contextlib import contextmanager
+from typing import Generator, Optional
 
 _logger = logging.getLogger(__name__)
 
+_BUFFER_SIZE = 100
+_MAGIC_COMMAND = 'get-my-ip'
 
-class MyIp:
-    def __init__(self, url: str, arg_name: Optional[str]):
-        self.__url = url
-        self.__arg_name = arg_name
 
-        adapter = HTTPAdapter(max_retries=Retry(connect=3, backoff_factor=0.5))
-        self.__session = requests.Session()
-        self.__session.mount('http://', adapter)
-        self.__session.mount('https://', adapter)
+@contextmanager
+def get_my_ip(host: str, port: int, command: Optional[str] = None) -> Generator[Optional[str], None, None]:
+    _logger.debug('Getting current IP')
 
-    def get(self) -> Optional[str]:
-        _logger.debug('Getting current IP')
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        try:
+            sock.connect((host, port))
+            if command:
+                sent = sock.sendall(command.encode())
+                if sent == 0:
+                    raise RuntimeError('Socket connection broken')
+        except Exception as e:
+            _logger.error('Error caused while getting current IP: {}'.format(e))
+            yield None
+            return
+
+        public_ip = sock.recv(_BUFFER_SIZE).decode().rstrip('\n')
+        _logger.info('Current public IP is {!r}'.format(public_ip))
 
         try:
-            response = self.__session.get(self.__url)
-            response.raise_for_status()
-        except requests.RequestException as e:
-            _logger.error('Error caused while getting current IP: {}'.format(e))
-            return None
+            yield public_ip
 
-        result = response.json()
-        if self.__arg_name:
-            result = result[self.__arg_name]
+            _logger.debug('Waiting for connection termination')
+            __set_keepalive(sock)
+            if sock.recv(_BUFFER_SIZE) != b'':
+                _logger.warning('Unwanted data received')
 
-        _logger.info('Current IP is {!r}'.format(result))
+        except TimeoutError:
+            pass
 
-        return result
+        finally:
+            _logger.debug('Closing connection')
+
+
+def __set_keepalive(sock: socket.SocketType, after_idle_sec: int = 1, interval_sec: int = 3, max_fails: int = 5):
+    _logger.debug('Enable TCP keep-alive')
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, after_idle_sec)
+    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, interval_sec)
+    sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, max_fails)
