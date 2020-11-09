@@ -5,6 +5,7 @@
     "retry_s": 10,
     "dns_token": "foobartoken",
     "dns_domain": "bar.com",
+    "dns_ttl": 59,
     "dns_record_ids": [
         10102,
         24520

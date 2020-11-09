@@ -74,7 +74,7 @@ def main_loop(config: Config, cache: dict, dns: DigitalOceanDns):
         with get_my_ip(config.my_ip_host, config.my_ip_port, config.my_ip_command) as current_ip:
             if current_ip and current_ip != cache.get('last_ip'):
                 for record_id in config.dns_record_ids:
-                    dns.update_record_by_id(record_id, current_ip)
+                    dns.update_record_by_id(record_id, current_ip, config.dns_ttl)
 
                 cache['last_ip'] = current_ip
 
