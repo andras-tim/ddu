@@ -4,6 +4,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -xe \
     && apt-get update \
+    && apt-get dist-upgrade -y \
     && apt-get install -y \
         python3 \
         python3-pip \
