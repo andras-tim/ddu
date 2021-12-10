@@ -8,7 +8,7 @@ DigitalOcean DNS Updater for Dynamic IP
     ``` sh
     docker run --rm -ti \
         -v '/path/of/config.json:/srv/ddu/config.json:ro' \
-        andrastim/ddu -v
+        "ghcr.io/andras-tim/ddu -v
     ```
 
 
@@ -34,5 +34,5 @@ You can use this container for enumerate records with the necessary `dns_record_
 ``` sh
    docker run --rm -ti \
        -v '/path/of/config.json:/srv/ddu/config.json:ro' \
-       andrastim/ddu --list-records
+       "ghcr.io/andras-tim/ddu --list-records
 ```
