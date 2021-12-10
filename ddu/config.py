@@ -13,6 +13,7 @@ Config = NamedTuple(
         ('dns_token', str),
         ('dns_domain', str),
         ('dns_record_ids', List[int]),
+        ('dns_ttl', int),
     ]
 )
 
